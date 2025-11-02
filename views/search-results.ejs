@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="uk"> <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Результати пошуку - FilmForToday</title>
+    
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+
+<body class="search-page-body"> 
+    
+    <%- include('partials/header') %>
+
+    <main>
+        <div class="container">
+            <%- include('partials/search') %>
+            <% if (results.length > 0) { %>
+                <h2>Знайдено: <%= results.length %> результат(ів) за запитом «<%= q %>»</h2>
+                <div class="film-grid">
+                    <% results.forEach(function(film) { %>
+                        <a href="/film/<%= film.id %>" class="film-card-link">
+                            <div class="film-card">
+                                <div class="film-poster">
+                                    <img src="<%= film.image %>" alt="<%= film.name %>">
+                                </div>
+                                <div class="film-title">
+                                    <%= film.name %>
+                                </div>
+                            </div>
+                        </a>
+                    <% }) %>
+                </div>
+            <% } else { %>
+                <h2>На жаль, за запитом «<%= q %>» нічого не знайдено</h2>
+                <p>Спробуйте змінити пошуковий запит або використати фільтри.</p>
+            <% } %>
+
+        </div>
+    </main>
+    <%- include('partials/auth-modals') %>
+
+    <script src="/js/main.js"></script>
+    <script src="/js/search.js"></script>
+</body>
+</html>

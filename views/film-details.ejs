@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= film.name %> - FilmForToday</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body class="film-details-page-body">
+    
+    <%- include('partials/header') %>
+    <div class="menu-overlay" id="menu-overlay"></div>
+
+    <main>
+        <div class="container">
+            
+            <section class="film-header-grid">
+                <div class="film-poster-details">
+                    <img src="<%= film.poster_url %>" alt="Постер: <%= film.name %>">
+                </div>
+                <div class="film-info-details">
+                    <h1><%= film.name %></h1>
+                    
+                    <ul class="film-meta-list">
+                        
+                        <li>
+                            <span class="meta-label">Рейтинг IMDb:</span>
+                            <span class="meta-value imdb-rating">
+                                <i class="fas fa-star"></i> <%= film.imdb_rating %>
+                            </span>
+                        </li>
+
+                        <li>
+                            <span class="meta-label">Рік:</span>
+                            <span class="meta-value"><%= film.release_year %></span>
+                        </li>
+
+                        <li>
+                            <span class="meta-label">Тривалість:</span>
+                            <span class="meta-value"><%= film.duration %></span>
+                        </li>
+                        
+                        <li>
+                            <span class="meta-label">Країна:</span>
+                            <span class="meta-value"><%= film.country %></span>
+                        </li>
+                        
+                        <li>
+                            <span class="meta-label">Вік:</span>
+                            <span class="meta-value"><%= film.age_limit %></span>
+                        </li>
+
+                        <li class="meta-genres">
+                            <span class="meta-label">Жанри:</span>
+                            <div class="film-genres-list">
+                                <% genres.forEach(genre => { %>
+                                    <span class="genre-tag"><%= genre %></span>
+                                <% }); %>
+                            </div>
+                        </li>
+                    </ul>
+
+                    <p class="film-description"><%= film.description %></p>
+                    
+                    <div class="top-moods">
+                        <strong>Інші глядачі відчули:</strong>
+                        <% topFilmMoods.forEach(mood => { %>
+                            <span class="mood-tag-display">
+                                <%= mood.emoji %> <%= mood.name %> (<%= mood.tag_count %>)
+                            </span>
+                        <% }); %>
+                        <% if (topFilmMoods.length === 0) { %>
+                            <span style="opacity: 0.7;">Ще ніхто не ділився емоціями</span>
+                        <% } %>
+                    </div>
+                </div>
+            </section>
+
+            <section class="price-aggregator">
+                <h2>Де дивитись</h2>
+                <div class="price-list">
+                    
+                    <% if (Object.keys(groupedPrices).length > 0) { %>
+                        
+                        <% Object.keys(groupedPrices).forEach(platformName => { %>
+                            <% const platform = groupedPrices[platformName]; %>
+                            
+                            <div class="price-card platform-group">
+                                
+                                <div class="platform-header">
+                                    <span class="platform-name"><%= platformName %></span>
+                                    <a href="<%= platform.url %>" class="auth-button" target="_blank">Перейти</a>
+                                </div>
+                                
+                                <ul class="price-options-list">
+                                    <% platform.options.forEach(option => { %>
+                                        <li class="price-option-item">
+                                            <span class="access-type"><%= option.access_type %></span>
+                                            <span class="price-value">
+                                                <% if (option.price && option.price > 0) { %>
+                                                
+                                                    <% if (option.access_type.includes('Підписка')) { %>
+                                                        <%= parseFloat(option.price).toFixed(0) %> грн/міс
+                                                    <% } else { %>
+                                                        <%= parseFloat(option.price).toFixed(0) %> грн
+                                                    <% } %>
+                                                
+                                                <% } else { %>
+                                                    Включено у підписку
+                                                <% } %>
+                                            </span>
+                                        </li>
+                                    <% }); %>
+                                </ul>
+                            </div>
+                        <% }); %>
+                        
+                    <% } else { %>
+                        <p>Наразі немає пропозицій від наших партнерів.</p>
+                    <% } %>
+                </div>
+            </section>
+
+            <section class="rating-mood-section">
+                <h2>Ваші враження</h2>
+                
+                <% if (locals.isAuthenticated) { %>
+                    <div class="rating-form-container">
+                        <h4>Оцініть фільм (1-5):</h4>
+                        <div class="star-rating-widget" data-film-id="<%= filmId %>">
+                            <% for (let i = 1; i <= 5; i++) { %>
+                                <i class="fas fa-star" 
+                                   data-value="<%= i %>" 
+                                   class="<%= (userStarRating >= i) ? 'fas fa-star active' : 'far fa-star' %>"
+                                ></i>
+                            <% } %>
+                            <span class="star-rating-message" id="star-rating-message"></span>
+                        </div>
+                        
+                        <h4>Опишіть ваше враження (до 3-х):</h4>
+                        <div class="mood-tag-widget" data-film-id="<%= filmId %>">
+                            <% allMoodTags.forEach(tag => { %>
+                                <button 
+                                    class="mood-tag-btn <%= (userMoodTagIds.includes(tag.mood_tag_id)) ? 'active' : '' %>"
+                                    data-tag-id="<%= tag.mood_tag_id %>"
+                                >
+                                    <%= tag.emoji %> <%= tag.name %>
+                                </button>
+                            <% }); %>
+                        </div>
+                        <span class="mood-rating-message" id="mood-rating-message"></span>
+                    </div>
+                
+                <% } else { %>
+                    <div class="rating-login-prompt">
+                        <h3>
+                            <a href="#" id="login-link-from-rating">Увійдіть</a>, 
+                            щоб оцінити фільм та поділитись емоціями!
+                        </h3>
+                        <p>(Це дозволить нам створювати для вас кращі рекомендації)</p>
+                    </div>
+                <% } %>
+
+            </section>
+
+        </div>
+    </main>
+    
+    <%- include('partials/auth-modals') %>
+    <script src="/js/main.js"></script>
+    <script src="/js/film-details.js"></script>
+</body>
+</html>
