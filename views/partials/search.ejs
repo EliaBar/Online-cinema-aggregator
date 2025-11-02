@@ -1,0 +1,117 @@
+<section class="search-container" id="search-component">
+                <form class="search-form" id="text-search-form" action="/search-results" method="get">
+                    <input type="text" name="q" placeholder="Пошук фільмів та серіалів..." class="search-input">
+                    <button type="button" class="toggle-button" id="toggle-to-filter">
+                        <i class="fas fa-sliders-h"></i> Фільтри
+                    </button>
+                    <button type="submit" class="submit-button" aria-label="Пошук">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+
+        <form class="filter-form" id="filter-search-form" action="/search-results" method="get">
+                <div class="filter-header">
+                    <h4>Розширений пошук</h4>
+                    <button type="button" class="toggle-button" id="toggle-to-text">
+                        <i class="fas fa-font"></i> Пошук за назвою
+                    </button>
+                </div>
+                
+                <div class="filter-grid">
+                    
+                    <div class="filter-group">
+                        <label for="genre">Жанр:</label>
+                        <select id="genre" name="genre">
+                            <option value="">Будь-який</option>
+                            <% if (locals.allGenres && allGenres.length > 0) { %>
+                                <% allGenres.forEach(genre => { %>
+                                    <option value="<%= genre.genre_id %>"><%= genre.name %></option>
+                                <% }); %>
+                            <% } %>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="platform">Платформа:</label>
+                        <select id="platform" name="platform">
+                            <option value="">Будь-яка</option>
+                            <% if (locals.allPlatforms && allPlatforms.length > 0) { %>
+                                <% allPlatforms.forEach(platform => { %>
+                                    <option value="<%= platform.platform_id %>"><%= platform.name %></option>
+                                <% }); %>
+                            <% } %>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="imdb_min">Рейтинг IMDb (не нижче):</label>
+                        <select id="imdb_min" name="imdb_min">
+                            <option value="">Будь-який</option>
+                            <option value="9">9.0+</option>
+                            <option value="8">8.0+</option>
+                            <option value="7">7.0+</option>
+                            <option value="6">6.0+</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="year_from">Рік (від):</label>
+                        <select id="year_from" name="year_from">
+                            <option value="">Будь-який</option>
+                            <% if (locals.allYears && allYears.length > 0) { %>
+                                <% allYears.forEach(year => { %>
+                                    <option value="<%= year %>"><%= year %></option>
+                                <% }); %>
+                            <% } %>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="year_to">Рік (до):</label>
+                        <select id="year_to" name="year_to">
+                            <option value="">Будь-який</option>
+                            <% if (locals.allYears && allYears.length > 0) { %>
+                                <% allYears.forEach(year => { %>
+                                    <option value="<%= year %>"><%= year %></option>
+                                <% }); %>
+                            <% } %>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="country">Країна:</label>
+                        <select id="country" name="country">
+                            <option value="">Будь-яка</option>
+                            <% if (locals.allCountries && allCountries.length > 0) { %>
+                                <% allCountries.forEach(country => { %>
+                                    <option value="<%= country %>"><%= country %></option>
+                                <% }); %>
+                            <% } %>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="price">Доступ:</label>
+                        <select id="price" name="price_type">
+                            <option value="">Будь-який</option>
+                            <option value="free">Безкоштовно</option>
+                            <option value="subscription">За підпискою</option>
+                            <option value="rent">Оренда</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="duration">Тривалість (до, хв):</label>
+                        <input type="number" id="duration" name="duration_max" 
+                            step="10"
+                            min="<%= locals.durationLimits ? durationLimits.min : 60 %>"
+                            max="<%= locals.durationLimits ? durationLimits.max : 240 %>"
+                            placeholder="<%= locals.durationLimits ? durationLimits.max : 240 %>">
+                    </div>
+                </div>
+                
+                <button type="submit" class="submit-button filter-submit-button">
+                    <i class="fas fa-search"></i> Застосувати фільтри
+                </button>
+            </form>
+ </section>

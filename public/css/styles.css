@@ -1,0 +1,1039 @@
+/* ======================= */
+/* БАЗОВІ НАЛАШТУВАННЯ ТА КОЛЬОРИ */
+/* ======================= */
+:root {
+    --bg-color: #F4F7F6;
+    --primary-color: #333C57;
+    --card-bg-color: #FFFFFF;
+    --text-color: #222222;
+    --text-light-color: #FFFFFF;
+    --border-color: #DDE2E1;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+body.dark-theme {
+    --bg-color: #1a1e29;
+    --primary-color: #F4F7F6;
+    --card-bg-color: #2a2f40;
+    --text-color: #F4F7F6;
+    --border-color: #40465c;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    transition: background-color 0.3s, color 0.3s;
+}
+.container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+a { text-decoration: none; color: var(--primary-color); }
+
+
+/* ======================= */
+/* ХЕДЕР                   */
+/* ======================= */
+.site-header {
+    background-color: var(--card-bg-color);
+    border-bottom: 1px solid var(--border-color);
+    padding: 15px 0;
+    margin-bottom: 30px;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.site-header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-left, .header-right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 15px; 
+}
+.header-right {
+    justify-content: flex-end;
+}
+.header-center {
+    flex: 2; 
+    text-align: center;
+}
+
+.logo a {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    transition: color 0.3s;
+}
+
+/* Іконки в хедері */
+.nav-icon {
+    font-size: 1.8rem;
+    color: var(--text-color);
+    transition: color 0.3s;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+.nav-icon:hover {
+    color: var(--primary-color);
+}
+
+
+/* ======================= */
+/*        БІЧНЕ МЕНЮ     */
+/* ======================= */
+.side-menu {
+    position: fixed;
+    top: 0;
+    left: -300px; 
+    width: 300px;
+    height: 100%;
+    background-color: var(--card-bg-color);
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+    z-index: 1001; 
+    padding: 20px;
+    transition: left 0.3s ease-in-out;
+}
+
+.side-menu ul li button.side-menu-link {
+    font-size: 1.5rem;
+    font-weight: 500;
+    font-family: inherit;
+    color: var(--primary-color);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    text-align: left;
+}
+.side-menu ul li button.side-menu-link:hover {
+    text-decoration: underline;
+}
+
+.side-menu.is-active {
+    left: 0;
+}
+
+.menu-close-button {
+    font-size: 2rem;
+    margin-bottom: 30px;
+}
+
+.side-menu ul {
+    list-style: none;
+}
+.side-menu ul li {
+    margin-bottom: 15px;
+}
+.side-menu ul li a {
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+.menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+}
+.menu-overlay.is-active {
+    opacity: 1;
+    visibility: visible;
+}
+
+
+/* ======================= */
+/* БЛОК ПОШУКУ ТА ФІЛЬТРІВ */
+/* ======================= */
+.search-container {
+    background-color: var(--card-bg-color);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    margin-bottom: 30px;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.search-form {
+    display: flex;
+    width: 100%;
+}
+.search-input {
+    flex-grow: 1;
+    font-size: 1.1rem;
+    padding: 12px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px 0 0 8px;
+    margin-right: -1px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+.toggle-button, .submit-button {
+    font-size: 1rem;
+    padding: 0 20px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-color); 
+    color: var(--text-color); 
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+.toggle-button:hover, .submit-button:hover {
+    filter: brightness(95%);
+}
+
+body.dark-theme .toggle-button:hover, 
+body.dark-theme .submit-button:hover {
+    filter: brightness(120%);
+}
+.submit-button {
+    border-radius: 0 8px 8px 0;
+    color: var(--primary-color);
+}
+.filter-form { display: none; }
+.filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+    transition: border-color 0.3s;
+}
+.filter-header h4 { font-size: 1.2rem; margin: 0; }
+.filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+.filter-group { display: flex; flex-direction: column; }
+.filter-group label { margin-bottom: 5px; font-weight: 500; }
+.filter-group input, .filter-group select {
+    font-size: 1rem;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background-color: var(--bg-color); 
+    color: var(--text-color); 
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+.filter-submit-button {
+    width: 100%;
+    margin-top: 20px;
+    padding: 12px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    background-color: var(--primary-color);
+    color: var(--bg-color); 
+    border: none;
+    border-radius: 8px;
+    transition: background-color 0.3s, color 0.3s;
+}
+.filter-submit-button:hover {
+    filter: brightness(1.2); 
+}
+.search-container.filter-mode .search-form { display: none; }
+.search-container.filter-mode .filter-form { display: block; }
+
+/* ======================= */
+/* БЛОК "ТОП ПРОПОЗИЦІЇ"  */
+/* ======================= */
+.top-offers {
+    background-color: var(--primary-color); 
+    color: var(--bg-color); 
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.top-offers-header {
+    margin-bottom: 25px;
+}
+.top-offers-title p {
+    font-size: 1.1rem;
+    opacity: 0.8;
+    margin: 0;
+}
+.top-offers h2 {
+    font-size: 1.8rem;
+    margin-bottom: 5px;
+}
+
+/* 1.  Батьківський елемент для стрілок */
+.carousel-wrapper {
+    position: relative; 
+    display: flex;
+    align-items: center;
+}
+
+/* 2. СТРІЛКИ  */
+.carousel-arrow {
+    position: absolute; 
+    top: 50%; 
+    transform: translateY(-50%); 
+    z-index: 10; 
+    
+    background-color: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: var(--text-light-color);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
+}
+.carousel-arrow:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-50%) scale(1.1); 
+}
+/* Розміщуємо стрілки по боках */
+#carousel-prev {
+    left: -25px; 
+}
+#carousel-next {
+    right: -25px; 
+}
+
+
+/* 3. КАРУСЕЛЬ (ОНОВЛЕНО) */
+.carousel-container {
+    display: flex;
+    overflow-x: auto;
+    gap: 20px;
+    scroll-behavior: smooth;
+    scrollbar-width: none; /* Firefox */
+    
+    padding: 0 10px; 
+    width: 100%; 
+}
+.carousel-container::-webkit-scrollbar {
+    display: none; 
+}
+
+
+/* Картка фільму (без змін) */
+.movie-card {
+    flex-shrink: 0; 
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: var(--card-bg-color); 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    color: var(--text-color); 
+    transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s, color 0.3s;
+    width: auto; 
+}
+.movie-card:hover {
+    transform: translateY(-5px); 
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); 
+}
+
+.movie-card img {
+    height: 35vh; 
+    
+    width: auto;
+    object-fit: cover;
+    display: block;
+}
+
+.movie-card h3 {
+    font-size: 1rem;
+    padding: 10px;
+    text-align: center;
+    display: flex;
+    white-space: normal;
+    overflow: visible; 
+    text-overflow: clip; 
+    max-width: calc(25vh / 1.1); 
+}
+
+.film-card-link {
+    text-decoration: none; 
+    color: inherit; 
+}
+
+/* ================================== */
+/* СТОРІНКА РЕЗУЛЬТАТІВ ПОШУКУ        */
+/* ================================== */
+main .container h2 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+main .container p {
+    font-size: 1.1rem;
+}
+
+/* Сітка для фільмів */
+.film-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 240px));
+    justify-content: center; 
+    gap: 25px;
+    margin-top: 20px;
+}
+
+
+.film-card {
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: var(--card-bg-color);
+    box-shadow: var(--shadow);
+    color: var(--text-color);
+    transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s, color 0.3s;
+}
+
+.film-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.film-poster {
+    width: 100%;
+    aspect-ratio: 2 / 3; 
+    background-color: var(--border-color); 
+}
+
+.film-poster img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.film-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 15px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ================================== */
+/*       МОДАЛЬНІ ВІКНА ВХОДУ          */
+/* ================================== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); 
+    z-index: 2000;
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+}
+
+.modal-overlay.is-active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.auth-modal {
+    background-color: var(--card-bg-color);
+    color: var(--text-color);
+    padding: 30px 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 450px;
+    position: relative; 
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.auth-modal h2 {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 25px;
+    color: var(--primary-color);
+}
+
+/* Кнопка "Х" (Закрити) */
+.close-modal-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 1.5rem;
+    color: var(--text-color);
+    background: none;
+    border: none;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+.close-modal-btn:hover {
+    opacity: 1;
+}
+
+/* Форми */
+.form-group {
+    margin-bottom: 20px;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    border-radius: 6px;
+}
+
+.auth-button {
+    width: 100%;
+    padding: 14px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    background-color: var(--primary-color);
+    color: var(--bg-color); 
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: filter 0.2s;
+}
+.auth-button:hover {
+    filter: brightness(1.2);
+}
+
+/* Перемикач Вхід/Реєстрація */
+.form-switcher {
+    text-align: center;
+    margin-top: 25px;
+}
+.form-switcher p {
+    font-size: 0.9rem;
+    color: var(--text-color);
+}
+.switch-link {
+    background: none;
+    border: none;
+    font-size: inherit;
+    font-weight: bold;
+    color: var(--primary-color);
+    cursor: pointer;
+    text-decoration: underline;
+}
+.switch-link:hover {
+    text-decoration: none;
+}
+
+.form-group-password {
+    position: relative; 
+}
+
+.password-toggle-icon {
+    position: absolute; 
+    top: 70%; 
+    right: 15px; /* Розміщуємо справа */
+    transform: translateY(-50%); 
+    color: var(--text-color);
+    opacity: 0.6;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+.password-toggle-icon:hover {
+    opacity: 1;
+}
+
+.form-group-password input:only-child {
+    padding-right: 45px; /* + місце, щоб текст не заходив під іконку */
+}
+.form-group-password:has(label) .password-toggle-icon {
+     /* Якщо є 'label', іконка має бути нижче */
+     top: calc(50% + 14px); 
+}
+
+/* Допоміжний клас для JS (ховає вікно) */
+.is-hidden {
+    display: none;
+}
+
+/* ================================== */
+/*         СТОРІНКА ПРОФІЛЮ           */
+/* ================================== */
+
+/* Заголовок (h2) для 'Особистий кабінет' */
+.profile-page-body h2 {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 30px;
+    color: var(--primary-color);
+}
+
+.profile-container {
+    display: flex;
+    gap: 30px;
+    background-color: var(--card-bg-color);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 30px;
+    transition: background-color 0.3s;
+}
+
+/* Навігація профілю (ліва колонка) */
+.profile-nav {
+    flex: 1; 
+    min-width: 200px;
+    border-right: 1px solid var(--border-color);
+    padding-right: 30px;
+    transition: border-color 0.3s;
+}
+.profile-nav ul {
+    list-style: none;
+}
+.profile-nav ul li a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    padding: 15px;
+    border-radius: 8px;
+    color: var(--text-color);
+    opacity: 0.7;
+    transition: background-color 0.2s, opacity 0.2s;
+}
+.profile-nav ul li a:hover {
+    background-color: var(--bg-color);
+    opacity: 1;
+}
+/* Активна вкладка */
+.profile-nav ul li a.is-active {
+    background-color: var(--bg-color);
+    color: var(--primary-color);
+    opacity: 1;
+    font-weight: bold;
+}
+.profile-nav ul li a.logout-link {
+    color: #e74c3c; 
+}
+.profile-nav ul li a.logout-link:hover {
+    background-color: #e74c3c;
+    color: #fff;
+}
+
+/* Контент профілю (права колонка) */
+.profile-content {
+    flex: 3; 
+}
+.profile-content h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+}
+.profile-content p {
+    margin-bottom: 20px;
+    opacity: 0.8;
+}
+
+.profile-content-section {
+    display: none; 
+}
+.profile-content-section.is-active {
+    display: block;
+}
+
+.profile-content .form-group-password {
+    position: relative;
+}
+
+.profile-content .password-toggle-icon {
+    position: absolute;
+    top: calc(50% + 14px); 
+    right: 15px;
+    transform: translateY(-50%);
+    color: var(--text-color);
+    opacity: 0.6;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.profile-content .password-toggle-icon:hover {
+    opacity: 1;
+}
+.profile-content .form-group-password {
+    position: relative;
+}
+
+.profile-content .password-toggle-icon {
+    position: absolute;
+    top: calc(50% + 14px); 
+    right: 15px;
+    transform: translateY(-50%);
+    color: var(--text-color);
+    opacity: 0.6;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.profile-content .password-toggle-icon:hover {
+    opacity: 1;
+}
+
+/* Спільні стилі форм */
+.profile-content form {
+    max-width: 500px;
+}
+.profile-content form .form-group {
+    margin-bottom: 20px;
+}
+.profile-content form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+.profile-content form input,
+.profile-content form select {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    border-radius: 6px;
+}
+.profile-content form input[readonly] {
+    background-color: var(--border-color);
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+.profile-content form small {
+    font-size: 0.8rem;
+    opacity: 0.6;
+    margin-top: 5px;
+    display: block;
+}
+.profile-content .auth-button {
+    width: auto;
+    padding: 12px 30px;
+}
+
+.form-message {
+    margin-top: 15px;
+    font-size: 0.9rem;
+}
+
+.profile-content .auth-button:disabled {
+    opacity: 0.5; 
+    cursor: not-allowed; 
+    filter: brightness(1); 
+}
+
+.profile-content .auth-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    filter: brightness(1);
+}
+
+/*  Небезпечна зона */
+.danger-zone {
+    margin-top: 40px;
+    border-top: 2px solid #e74c3c; 
+    padding-top: 20px;
+}
+.danger-zone h3 {
+    color: #e74c3c;
+    border-bottom: none; 
+    margin-bottom: 10px;
+}
+.danger-zone .auth-button.danger-button {
+    background-color: #e74c3c; 
+    color: #fff;
+}
+.danger-zone .auth-button.danger-button:hover {
+    background-color: #c0392b;
+    filter: none;
+}
+/* Стиль для неактивної червоної кнопки */
+.danger-zone .auth-button.danger-button:disabled {
+    background-color: #e74c3c; 
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ================================== */
+/*  СТОРІНКА ФІЛЬМУ (film-details) */
+/* ================================== */
+
+.film-header-grid {
+    display: grid;
+    grid-template-columns: 300px 1fr; 
+    gap: 40px;
+    margin-bottom: 40px;
+}
+
+.film-poster-details img {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+
+.film-info-details h1 {
+    font-size: 2.8rem;
+    font-weight: 700;
+    margin-bottom: 20px; 
+    color: var(--primary-color);
+}
+
+/*СТИЛІ для списку характеристик 
+
+*/
+.film-meta-list {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+    display: grid;
+    grid-template-columns: 1fr; 
+    gap: 12px; 
+}
+
+.film-meta-list li {
+    display: flex;
+    align-items: flex-start; 
+    font-size: 1.1rem;
+    line-height: 1.5; 
+}
+
+.film-meta-list .meta-label {
+    font-weight: 600;
+    opacity: 0.8;
+    width: 140px; 
+    flex-shrink: 0; /* Заборона мітці стискатися */
+}
+
+.film-meta-list .meta-value {
+    font-weight: 500;
+}
+
+.film-meta-list .imdb-rating {
+    font-weight: 700;
+    color: #f39c12;
+}
+.film-meta-list .imdb-rating i {
+    font-size: 0.9em;
+}
+
+.film-genres-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.genre-tag {
+    background-color: var(--bg-color);
+    border: 1px solid var(--border-color);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+}
+.film-description {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    margin-bottom: 20px;
+}
+.top-moods {
+    background-color: var(--bg-color);
+    padding: 15px;
+    border-radius: 8px;
+}
+.top-moods strong {
+    display: block;
+    margin-bottom: 10px;
+}
+.mood-tag-display {
+    display: inline-block;
+    background: var(--card-bg-color);
+    border: 1px solid var(--border-color);
+    padding: 5px 10px;
+    border-radius: 6px;
+    margin-right: 5px;
+    font-size: 0.9rem;
+}
+
+/* Секція цін */
+.price-aggregator {
+    background-color: var(--card-bg-color);
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 40px;
+    box-shadow: var(--shadow);
+}
+.price-aggregator h2 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+}
+.price-list {
+    display: grid;
+    gap: 20px; 
+}
+
+/* * СТИЛІ КАРТКИ ЦІН
+*/
+.price-card.platform-group {
+    padding: 20px;
+    border-radius: 8px;
+    background-color: var(--bg-color);
+    border: 1px solid var(--border-color);
+}
+
+.platform-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+
+.platform-header .platform-name {
+    font-weight: bold;
+    font-size: 1.4rem;
+    color: var(--primary-color);
+}
+
+.platform-header .auth-button {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    text-align: center;
+    width: auto; 
+    max-width: 25%;
+    flex-shrink: 0; 
+}
+.price-options-list {
+    list-style: none;
+    display: grid;
+    gap: 10px;
+}
+
+.price-option-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 5px;
+    border-bottom: 1px dashed var(--border-color);
+}
+.price-option-item:last-child {
+    border-bottom: none;
+}
+
+.price-option-item .access-type {
+    opacity: 0.9;
+}
+
+.price-option-item .price-value {
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+/* Секція Оцінок/Емоцій */
+.rating-mood-section {
+    background-color: var(--card-bg-color);
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: var(--shadow);
+}
+.rating-mood-section h2 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+}
+.rating-mood-section h4 {
+    font-size: 1.2rem;
+    margin-top: 25px;
+    margin-bottom: 15px;
+}
+
+/* Зірки */
+.star-rating-widget {
+    font-size: 2rem;
+    color: #ccc;
+}
+.star-rating-widget i {
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.star-rating-widget i.hover,
+.star-rating-widget i.active {
+    color: #f39c12; 
+}
+.star-rating-message {
+    font-size: 0.9rem;
+    color: green;
+    margin-left: 15px;
+}
+
+/* Емоції */
+.mood-tag-widget {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.mood-tag-btn {
+    font-size: 1rem;
+    background-color: var(--bg-color);
+    border: 1px solid var(--border-color);
+    color: var(--text-color); 
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.mood-tag-btn.active {
+    background-color: var(--primary-color);
+    color: var(--bg-color);
+    border-color: var(--primary-color);
+}
+/* Активний тег емоції */
+.mood-tag-btn.active {
+    background-color: var(--primary-color);
+    color: var(--bg-color);
+    border-color: var(--primary-color);
+}
+.mood-rating-message {
+    font-size: 0.9rem;
+    color: green;
+    display: block;
+    margin-top: 10px;
+}
+
+/* Заглушка для гостей */
+.rating-login-prompt {
+    text-align: center;
+    padding: 20px;
+    background-color: var(--bg-color);
+    border-radius: 8px;
+}
+.rating-login-prompt h3 a {
+    text-decoration: underline;
+    cursor: pointer;
+}
