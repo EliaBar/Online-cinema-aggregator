@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         const setStars = (rating) => {
             stars.forEach(star => {
-                const starValue = parseInt(star.getAttribute('data-value'), 10);
+                const starValue = Number.parseInt(star.getAttribute('data-value'), 10);
                 if (starValue <= rating) {
                     star.classList.remove('far');
                     star.classList.add('fas', 'active');
