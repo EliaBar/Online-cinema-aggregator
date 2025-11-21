@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Про нас - FilmForToday</title>
+    
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body class="about-page-body">
+    
+    <%- include('partials/header') %>
+    <div class="menu-overlay" id="menu-overlay"></div>
+
+    <main>
+        <div class="container">
+            
+            <section class="about-section">
+                <h2>Про FilmForToday</h2>
+                
+                <p>
+                    **FilmForToday** — це ваш персональний помічник у світі кіно. Цей вебсервіс був створений з метою вирішити поширену проблему сучасного глядача: "Що подивитися і де?"
+                </p>
+
+                <h3>Місія проекту</h3>
+                <p>
+                    Ринок стрімінгових сервісів в Україні надзвичайно фрагментований. Маючи підписки на Megogo, Sweet.tv та інші платформи, користувачі змушені витрачати час, перемикаючись між застосунками в пошуках потрібного фільму чи найвигіднішої ціни.
+                </p>
+                <p>
+                    Мета проекту — об'єднати всю цю інформацію в одному зручному інтерфейсі. Дані агрегуються з ключових українських онлайн-кінотеатрів, щоб ви могли:
+                </p>
+                <ul>
+                    <li>Миттєво знаходити, на якій платформі доступний фільм.</li>
+                    <li>Порівнювати ціни.</li>
+                    <li>Відкривати для себе нове кіно за допомогою персоналізованих рекомендацій.</li>
+                </ul>
+
+                <h3>Використані Технології</h3>
+                <p>
+                    Цей вебсервіс побудований на сучасному технологічному стеку:
+                </p>
+                <ul>
+                    <li>**Back-end:** Node.js (Express.js) для обробки API-запитів.</li>
+                    <li>**Front-end:** EJS для рендерингу сторінок на сервері.</li>
+                    <li>**База даних:** MySQL для зберігання інформації про фільми, користувачів та оцінки.</li>
+                    <li>**Парсинг:** Спеціалізований скрипт на Python (з використанням Selenium та BeautifulSoup) для асинхронного збору та оновлення даних.</li>
+                </ul>
+            </section>
+
+        </div>
+    </main>
+    
+    <%- include('partials/auth-modals') %>
+    
+    <div id="toast-container"></div>
+    
+    <script src="/js/main.js"></script>
+
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-theme');
+                const themeIcon = document.querySelector('#theme-toggle i');
+                if (themeIcon) {
+                    themeIcon.classList.remove('fa-moon');
+                    themeIcon.classList.add('fa-sun');
+                }
+            }
+        })();
+    </script>
+</body>
+</html>

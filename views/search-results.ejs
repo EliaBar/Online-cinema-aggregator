@@ -11,12 +11,11 @@
 <body class="search-page-body"> 
     
     <%- include('partials/header') %>
-
     <main>
         <div class="container">
             <%- include('partials/search') %>
             <% if (results.length > 0) { %>
-                <h2>Знайдено: <%= results.length %> результат(ів) за запитом «<%= q %>»</h2>
+                <h2>Знайдено: <%= results.length %> результат(ів)</h2>
                 <div class="film-grid">
                     <% results.forEach(function(film) { %>
                         <a href="/film/<%= film.id %>" class="film-card-link">
@@ -39,7 +38,7 @@
         </div>
     </main>
     <%- include('partials/auth-modals') %>
-
+    <div id="toast-container"></div>
     <script src="/js/main.js"></script>
     <script src="/js/search.js"></script>
 </body>

@@ -1,21 +1,18 @@
 document.addEventListener("DOMContentLoaded", function() {
 
-    // === БЛОК 1: ЛОГІКА ЗІРКОВОГО РЕЙТИНГУ ===
+// ================ ЛОГІКА РЕЙТИНГУ  ================
     const starWidget = document.querySelector('.star-rating-widget');
+    
     if (starWidget) {
         const stars = starWidget.querySelectorAll('i');
-        const messageDiv = document.getElementById('star-rating-message');
         const filmId = starWidget.getAttribute('data-film-id');
-        let currentRating = 0;
         
-        const activeStar = starWidget.querySelector('i.active:last-of-type');
-        if (activeStar) {
-            currentRating = parseInt(activeStar.getAttribute('data-value'), 10);
-        }
+        let currentRating = parseInt(starWidget.getAttribute('data-current-rating'), 10) || 0;
 
         const setStars = (rating) => {
             stars.forEach(star => {
-                if (parseInt(star.getAttribute('data-value'), 10) <= rating) {
+                const starValue = parseInt(star.getAttribute('data-value'), 10);
+                if (starValue <= rating) {
                     star.classList.remove('far');
                     star.classList.add('fas', 'active');
                 } else {
@@ -24,63 +21,66 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
             });
         };
+        setStars(currentRating);
 
         stars.forEach(star => {
             star.addEventListener('mouseover', () => {
                 const rating = parseInt(star.getAttribute('data-value'), 10);
-                // Підсвічування зірок при наведенні
                 stars.forEach((s, i) => {
-                    s.classList.toggle('hover', i < rating);
+                    const sValue = parseInt(s.getAttribute('data-value'), 10);
+                    if (sValue <= rating) {
+                        s.classList.add('fas', 'hover');
+                        s.classList.remove('far');
+                    } else {
+                        s.classList.remove('fas', 'hover');
+                        s.classList.add('far');
+                    }
                 });
             });
 
             star.addEventListener('mouseout', () => {
                 stars.forEach(s => s.classList.remove('hover'));
-                setStars(currentRating);
+                setStars(currentRating); 
             });
 
             star.addEventListener('click', async () => {
                 const ratingValue = parseInt(star.getAttribute('data-value'), 10);
-                
-                // Якщо клікнули на ту саму зірку, знімається оцінка (ставиться 0)
                 const newRating = (ratingValue === currentRating) ? 0 : ratingValue;
                 
-                messageDiv.textContent = 'Збереження...';
+                showToast('Збереження...', 'info');
                 
                 try {
                     const response = await fetch(`/film/${filmId}/rate-star`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ rating_value: newRating })
+                        body: JSON.stringify({ rating_value : newRating }) 
                     });
                     const result = await response.json();
 
                     if (response.ok) {
-                        currentRating = newRating; 
-                        setStars(currentRating);
-                        messageDiv.textContent = result.message;
-                        messageDiv.style.color = 'green';
+                        currentRating = newRating;
+                        setStars(currentRating);  
+                        showToast(result.message, 'success');
                     } else {
-                        messageDiv.textContent = result.message;
-                        messageDiv.style.color = 'red';
+                        showToast(result.message, 'error');
+                        setStars(currentRating); 
                     }
                 } catch (err) {
-                    messageDiv.textContent = 'Помилка мережі.';
-                    messageDiv.style.color = 'red';
+                    showToast('Помилка мережі.', 'error');
+                    setStars(currentRating); 
                 }
-                setTimeout(() => messageDiv.textContent = '', 2000);
             });
         });
     }
 
-    // === БЛОК 2: ЛОГІКА ТЕГІВ ЕМОЦІЙ ===
+    // ===  ЛОГІКА ТЕГІВ ЕМОЦІЙ ===
     const moodWidget = document.querySelector('.mood-tag-widget');
     if (moodWidget) {
         const buttons = moodWidget.querySelectorAll('.mood-tag-btn');
         const messageDiv = document.getElementById('mood-rating-message');
         const filmId = moodWidget.getAttribute('data-film-id');
         
-        // Функція для відправки даних на сервер
+
         const sendMoodTags = async () => {
             const activeButtons = moodWidget.querySelectorAll('.mood-tag-btn.active');
             const moodTagIds = Array.from(activeButtons).map(btn => 
@@ -97,15 +97,12 @@ document.addEventListener("DOMContentLoaded", function() {
                 const result = await response.json();
                 
                 if (response.ok) {
-                    messageDiv.textContent = result.message;
-                    messageDiv.style.color = 'green';
+                    showToast(result.message, 'success');
                 } else {
-                    messageDiv.textContent = result.message;
-                    messageDiv.style.color = 'red';
+                    showToast(result.message, 'error'); 
                 }
             } catch (err) {
-                messageDiv.textContent = 'Помилка мережі.';
-                messageDiv.style.color = 'red';
+                showToast('Помилка мережі.', 'error'); 
             }
             setTimeout(() => messageDiv.textContent = '', 2000);
         };
@@ -115,8 +112,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 const activeCount = moodWidget.querySelectorAll('.mood-tag-btn.active').length;
                 const isCurrentlyActive = button.classList.contains('active');
 
-                // Логіка: можна обрати, якщо < 5,
-                // АБО можна "відтиснути" кнопку, якщо вона вже активна
                 if (activeCount < 5 || isCurrentlyActive) {
                     button.classList.toggle('active');
                     sendMoodTags(); 

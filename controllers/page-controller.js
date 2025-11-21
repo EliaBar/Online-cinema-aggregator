@@ -4,6 +4,9 @@ const userRepo = require('../repositories/user-repository');
 const movieRepo = require('../repositories/movie-repository');
 const ratingRepo = require('../repositories/rating-repository');
 const logRepo = require('../repositories/log-repository');
+const recommendationService = require('../services/recommendation-service');
+const logic = require('../services/logic');
+const security = require('../services/security');
 
 async function getFilterData() {
     try {
@@ -11,24 +14,18 @@ async function getFilterData() {
             allGenres, 
             countryStrings,
             allYears,
-            durationLimits,
+            rawDurations,
             allPlatforms 
         ] = await Promise.all([
             movieRepo.getAllGenres(),
             movieRepo.getAllCountryStrings(),
             movieRepo.getAllReleaseYears(),
-            movieRepo.getDurationLimits(),
+            movieRepo.getAllDurations(),
             movieRepo.getAllPlatforms() 
         ]);
         
-        const countrySet = new Set();
-        countryStrings.forEach(str => {
-            const countries = str.split(','); 
-            countries.forEach(country => {
-                if(country.trim()) countrySet.add(country.trim());
-            });
-        });
-        const allCountries = Array.from(countrySet).sort();
+        const allCountries = logic.processCountries(countryStrings);
+        const durationLimits = logic.calculateDurationLimits(rawDurations);
         
         return { allGenres, allCountries, allYears, durationLimits, allPlatforms }; 
 
@@ -39,7 +36,7 @@ async function getFilterData() {
             allCountries: [], 
             allYears: [], 
             durationLimits: { min: 60, max: 240 },
-            allPlatforms: [] // <-- НОВЕ
+            allPlatforms: [] 
         };
     }
 }
@@ -120,15 +117,13 @@ exports.getAboutPage = async (req, res) => {
 
 
 /**
- * Контролер для сторінки "Особистий кабінет" (GET /profile)
- * Тепер він завантажує дані користувача з сесії
+ * Контролер для сторінки  (GET /profile)
  */
 exports.getProfilePage = async (req, res) => {
     try {
         // береться ID з сесії, яка була створена при вході
         const userId = req.session.user.id;
         
-        // Знаходимо актуальні дані користувача в БД
         const user = await userRepo.findUserById(userId);
 
         if (!user) {
@@ -138,11 +133,9 @@ exports.getProfilePage = async (req, res) => {
 
         let formattedDate = '';
         if (user.date_of_birth) {
-            // 1. Отримується об'єкт дати (який бачить сервер, напр. 2000-10-25)
             const dob = new Date(user.date_of_birth);
             
             const yyyy = dob.getFullYear();
-            // getMonth() повертає 0-11, тому +1
             const mm = String(dob.getMonth() + 1).padStart(2, '0'); 
             const dd = String(dob.getDate()).padStart(2, '0');
             
@@ -161,14 +154,13 @@ exports.getProfilePage = async (req, res) => {
 };
 
 /**
- * ОНОВЛЕНИЙ Контролер для сторінки Фільму (GET /film/:id)
+ * Контролер для сторінки Фільму (GET /film/:id)
  */
 exports.getFilmDetailsPage = async (req, res) => {
     try {
         const filmId = req.params.id;
         const userId = req.session.user ? req.session.user.id : null;
 
-        // 1. Отримуємо всі дані паралельно 
         const [
             film,
             genres,
@@ -189,18 +181,14 @@ exports.getFilmDetailsPage = async (req, res) => {
             return res.status(404).send("Фільм не знайдено");
         }
 
-        // --- 2.  ГРУПУВАННЯ ТА СОРТУВАННЯ ЦІН ---
         const groupedPrices = {};
 
-        // 2.1 Перебираються всі ціни, що прийшли з БД
         prices.forEach(price => {
             const platformName = price.name;
 
-            // 2.2 Якщо платформа ще не оброблялась, створюємо для неї запис
             if (!groupedPrices[platformName]) {
                 
-                // Визначаємо правильне URL для цієї платформи
-                let platformUrl = '#'; // Заглушка
+                let platformUrl = '#'; 
                 if (platformName === 'Megogo') {
                     platformUrl = film.url;
                 } else if (platformName === 'Sweet.tv') {
@@ -213,19 +201,16 @@ exports.getFilmDetailsPage = async (req, res) => {
                 };
             }
             
-            // 2.4 Додаєтья опція ціни
             groupedPrices[platformName].options.push({
                 access_type: price.access_type,
                 price: price.price
             });
         });
 
-        // 2.5 Сортуються опції для кожної платформи
         for (const platformName in groupedPrices) {
             groupedPrices[platformName].options.sort((a, b) => {
                 const priceA = a.price || 0;
                 const priceB = b.price || 0;
-                // Сортування від вищої ціни до нижчої
                 return priceB - priceA; 
             });
         }
@@ -238,6 +223,7 @@ exports.getFilmDetailsPage = async (req, res) => {
                 ratingRepo.getUserStarRating(userId, filmId),
                 ratingRepo.getUserMoodTagIds(userId, filmId)
             ]);
+            console.log(`Користувач ${userId} має оцінку ${userStarRating} для фільму ${filmId}`);
         }
         res.render('film-details', {
             film: film,
@@ -253,5 +239,207 @@ exports.getFilmDetailsPage = async (req, res) => {
     } catch (err) {
         console.error("Помилка getFilmDetailsPage:", err);
         res.status(500).send("Помилка сервера");
+    }
+};
+
+/**
+ * Для сторінки  recommendations
+ */
+exports.getRecommendationsPage = async (req, res) => {
+    try {
+        const userId = req.session.user.id;
+        const moodTagId = req.query.mood_tag_id || null;
+
+        const [recommendationData, allMoodTagsFromDB] = await Promise.all([
+            recommendationService.getRecommendationsForUser(userId, moodTagId),
+            movieRepo.getAllMoodTags() 
+        ]);
+
+        const allowedIds = new Set([
+            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 22, 23
+        ]);
+        
+        const filteredMoodTags = allMoodTagsFromDB.filter(tag => 
+            allowedIds.has(tag.mood_tag_id)
+        );
+
+        res.render('recommendations', {
+            films: recommendationData.films,
+            pageTitle: recommendationData.pageTitle,
+            allMoodTags: filteredMoodTags, 
+            currentMoodId: moodTagId  
+        });
+
+    } catch (err) {
+        console.error('Помилка getRecommendationsPage:', err);
+        res.status(500).send("Помилка сервера");
+    }
+};
+
+exports.getFilmEditPage = async (req, res) => {
+    try {
+        const filmId = req.params.id;
+
+        const [
+            film,
+            allGenres,
+            currentGenreIds,
+            countryStrings
+        ] = await Promise.all([
+            movieRepo.getFilmDetails(filmId),
+            movieRepo.getAllGenres(),
+            movieRepo.getFilmGenreIds(filmId), 
+            movieRepo.getAllCountryStrings()
+        ]);
+
+        if (!film) {
+            return res.status(404).send("Фільм не знайдено");
+        }
+
+        const imdbRatingList = [];
+        for (let i = 10.0; i >= 1.0; i -= 0.1) {
+            imdbRatingList.push(i.toFixed(1));
+        }
+
+        let durationValue = null;
+        if (film.duration) {
+            durationValue = parseInt(film.duration, 10) || null;
+        }
+
+        let yearStart = film.release_year || "";
+        let yearEnd = film.release_year || "";
+        if (String(film.release_year).includes('-')) {
+            const years = film.release_year.split('-');
+            yearStart = years[0];
+            yearEnd = years[1];
+        }
+
+        const countrySet = new Set();
+        countryStrings.forEach(str => {
+            const countries = str.split(','); 
+            if (countries) {
+                countries.forEach(country => {
+                    if (country.trim()) countrySet.add(country.trim());
+                });
+            }
+        });
+        const allCountries = Array.from(countrySet).sort();
+
+        const allYears = [];
+        for (let year = new Date().getFullYear() + 1; year >= 1888; year--) {
+            allYears.push(year);
+        }
+
+        res.render('film-edit', {
+            film: film,
+            allGenres: allGenres,
+            currentGenreIds: currentGenreIds,
+            allCountries: allCountries,
+            allYears: allYears,
+            yearStart: yearStart,
+            yearEnd: yearEnd,
+            
+            imdbRatingList: imdbRatingList, 
+            durationValue: durationValue  
+        });
+
+    } catch (err) {
+        console.error("Помилка getFilmEditPage:", err);
+        res.status(500).send("Помилка сервера");
+    }
+};
+
+/**
+ * Обробляє POST /film/:id/edit
+ * Зберігає зміни фільму.
+ */
+
+exports.handleUpdateFilm = async (req, res) => {
+    try {
+        const filmId = req.params.id;
+        const adminUserId = req.session.user.id;
+        
+        const {
+            poster_url,
+            description,
+            year_start,
+            year_end,
+            imdb_rating,
+            age_limit,    
+            duration,    
+            country,
+            genre
+        } = req.body;
+
+        let release_year;
+        if (year_start && year_end) {
+            release_year = (year_start === year_end) ? year_start : `${year_start}-${year_end}`;
+        } else {
+            release_year = year_start || null;
+        }
+        
+        const genreIds = [].concat(genre || []);
+
+        let formattedAgeLimit = null;
+        if (age_limit) {
+            formattedAgeLimit = `${age_limit}+`;
+        }
+
+        let formattedDuration = null;
+        if (duration) {
+            formattedDuration = `${duration} хв`;
+        }
+
+        const filmData = {
+            poster_url,
+            description,
+            release_year,
+            imdb_rating,
+            age_limit: formattedAgeLimit, 
+            duration: formattedDuration,  
+            country,
+            genreIds
+        };
+
+        await movieRepo.updateFilmDetails(filmId, filmData);
+        logRepo.logAdminAction(adminUserId, 'edit_film', filmId);
+
+        res.redirect(`/film/${filmId}?success=true`); 
+    
+    } catch (err) {
+        console.error("Помилка handleUpdateFilm:", err);
+        res.status(500).send("Помилка сервера");
+    }
+};
+
+exports.handleDeleteFilm = async (req, res) => {
+    try {
+        const filmId = req.params.id;
+        const adminUserId = req.session.user.id; 
+        
+        const { password } = req.body;
+
+        if (!password) {
+            return res.status(400).json({ message: "Будь ласка, введіть пароль для підтвердження." });
+        }
+        const adminUser = await userRepo.findUserById(adminUserId);
+
+        const isMatch = await security.verifyPassword(password, adminUser.password_hash);
+        if (!isMatch) {
+            return res.status(401).json({ message: "Неправильний пароль. Видалення скасовано." });
+        }
+        await movieRepo.deleteFilmById(filmId);
+        
+        logRepo.logAdminAction(adminUserId, 'delete_film', filmId);
+        console.log(`[Admin] Фільм з ID: ${filmId} успішно видалено.`);
+        
+        res.status(200).json({ 
+            message: "Фільм успішно видалено!",
+            redirectUrl: '/' 
+        });
+    
+    } catch (err) {
+        console.error("Помилка handleDeleteFilm:", err);
+        res.status(500).json({ message: "Помилка сервера" });
     }
 };

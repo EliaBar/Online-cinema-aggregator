@@ -20,37 +20,55 @@
                     <img src="<%= film.poster_url %>" alt="Постер: <%= film.name %>">
                 </div>
                 <div class="film-info-details">
-                    <h1><%= film.name %></h1>
-                    
+                    <div class="film-title-header">
+                        <h1><%= film.name %></h1>
+                        
+                        <% if (locals.isAuthenticated && locals.user.role === 'admin') { %>
+                            <a href="/film/<%= film.id %>/edit" class="auth-button admin-edit-btn">
+                                <i class="fas fa-pencil-alt"></i> Редагувати
+                            </a>
+                        <% } %>
+                    </div>
                     <ul class="film-meta-list">
                         
+                        <% if (film.imdb_rating) { %>
                         <li>
                             <span class="meta-label">Рейтинг IMDb:</span>
                             <span class="meta-value imdb-rating">
                                 <i class="fas fa-star"></i> <%= film.imdb_rating %>
                             </span>
                         </li>
+                        <% } %>
 
+                        <% if (film.release_year) { %>
                         <li>
                             <span class="meta-label">Рік:</span>
                             <span class="meta-value"><%= film.release_year %></span>
                         </li>
+                        <% } %>
 
+                        <% if (film.duration) { %>
                         <li>
                             <span class="meta-label">Тривалість:</span>
                             <span class="meta-value"><%= film.duration %></span>
                         </li>
+                        <% } %>
                         
+                        <% if (film.country) { %>
                         <li>
                             <span class="meta-label">Країна:</span>
                             <span class="meta-value"><%= film.country %></span>
                         </li>
+                        <% } %>
                         
+                        <% if (film.age_limit) { %>
                         <li>
                             <span class="meta-label">Вік:</span>
                             <span class="meta-value"><%= film.age_limit %></span>
                         </li>
+                        <% } %>
 
+                        <% if (locals.genres && genres.length > 0) { %>
                         <li class="meta-genres">
                             <span class="meta-label">Жанри:</span>
                             <div class="film-genres-list">
@@ -59,6 +77,7 @@
                                 <% }); %>
                             </div>
                         </li>
+                        <% } %>
                     </ul>
 
                     <p class="film-description"><%= film.description %></p>
@@ -123,20 +142,32 @@
             </section>
 
             <section class="rating-mood-section">
+                <% if (avgRating && avgRating.avgRating) { %>
+                    <div class="average-rating-block">
+                        <span class="meta-label">Середня оцінка (FfT):</span>
+                        <span class="meta-value average-rating">
+                            <i class="fas fa-star"></i> 
+                            <%= parseFloat(avgRating.avgRating).toFixed(1) %>
+                        </span>
+                        <span class="vote-count">(<%= avgRating.voteCount %> оцінок)</span>
+                    </div>
+                <% } %>
                 <h2>Ваші враження</h2>
                 
                 <% if (locals.isAuthenticated) { %>
                     <div class="rating-form-container">
                         <h4>Оцініть фільм (1-5):</h4>
-                        <div class="star-rating-widget" data-film-id="<%= filmId %>">
+                        <div class="star-rating-widget" 
+                            data-film-id="<%= filmId %>"
+                            data-current-rating="<%= userStarRating || 0 %>"
+                        >
                             <% for (let i = 1; i <= 5; i++) { %>
-                                <i class="fas fa-star" 
-                                   data-value="<%= i %>" 
-                                   class="<%= (userStarRating >= i) ? 'fas fa-star active' : 'far fa-star' %>"
-                                ></i>
+                                <i data-value="<%= i %>" class="far fa-star"></i>
                             <% } %>
-                            <span class="star-rating-message" id="star-rating-message"></span>
                         </div>
+                        <span class="star-rating-message" id="star-rating-message"></span>
+                    </div>
+                    <span class="star-rating-message" id="star-rating-message"></span>
                         
                         <h4>Опишіть ваше враження (до 3-х):</h4>
                         <div class="mood-tag-widget" data-film-id="<%= filmId %>">
@@ -168,6 +199,7 @@
     </main>
     
     <%- include('partials/auth-modals') %>
+    <div id="toast-container"></div>
     <script src="/js/main.js"></script>
     <script src="/js/film-details.js"></script>
 </body>

@@ -1,17 +1,24 @@
 const ratingRepo = require('../repositories/rating-repository');
+const logic = require('../services/logic');
 
 exports.postStarRating = async (req, res) => {
     try {
         const userId = req.session.user.id;
         const filmId = req.params.id;
+        
         const { rating_value } = req.body; 
 
-        if (![1, 2, 3, 4, 5].includes(rating_value)) {
+        if (!logic.isValidStarRating(rating_value)) {
             return res.status(400).json({ message: "Некоректна оцінка." });
         }
 
-        await ratingRepo.saveStarRating(userId, filmId, rating_value);
-        res.status(200).json({ message: "Оцінку збережено!" });
+        if (rating_value === 0) {
+            await ratingRepo.deleteStarRating(userId, filmId);
+            res.status(200).json({ message: "Оцінку видалено!" });
+        } else {
+            await ratingRepo.saveStarRating(userId, filmId, rating_value);
+            res.status(200).json({ message: "Оцінку збережено!" });
+        }
 
     } catch (err) {
         res.status(500).json({ message: "Помилка сервера." });

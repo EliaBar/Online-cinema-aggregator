@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
-     // === БЛОК 4: ЛОГІКА КАРУСЕЛІ ===
+     // ===  ЛОГІКА КАРУСЕЛІ ===
     const carousel = document.getElementById("top-offers-carousel");
     const prevBtn = document.getElementById("carousel-prev");
     const nextBtn = document.getElementById("carousel-next");
@@ -11,12 +11,9 @@ document.addEventListener("DOMContentLoaded", function() {
             const gap = 20; 
 
             if (direction === 'next') {
-                // Перевіряємо, чи клієнт вже в кінці
                 if (carousel.scrollLeft + carousel.clientWidth >= carousel.scrollWidth - gap) {
-                    // Клієнт в кінці - перестрибуємо на початок
                     carousel.scrollTo({ left: 0, behavior: 'smooth' });
                 } else {
-                    // Просто прокручуємо вправо
                     carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
                 }
             } 
