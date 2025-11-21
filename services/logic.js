@@ -30,7 +30,7 @@ exports.calculateDurationLimits = (durationStrings) => {
             if (typeof str !== 'string') return 0;
             // шукає першу групу цифр
             const match = str.match(/^(\d+)/); 
-            return match ? parseInt(match[1], 10) : 0;
+            return match ? Number.parseInt(match[1], 10) : 0;
         })
         .filter(num => num > 0); // Прибирає нулі та помилки
 
@@ -49,8 +49,8 @@ exports.calculateDurationLimits = (durationStrings) => {
  * Приймає рядок або число.
  */
 exports.isValidStarRating = (rating) => {
-    const val = parseInt(rating, 10);
-    return !isNaN(val) && [0, 1, 2, 3, 4, 5].includes(val);
+    const val = Number.parseInt(rating, 10);
+    return !Number.isNaN(val) && [0, 1, 2, 3, 4, 5].includes(val);
 };
 
 /**
@@ -76,7 +76,7 @@ exports.isValidDob = (dob) => {
     today.setHours(23, 59, 59, 999); // Кінець поточного дня
 
     // Перевіряє, чи дата валідна (не NaN)
-    if (isNaN(date.getTime())) return false;
+    if (Number.isNaN(date.getTime())) return false;
 
     return date >= minDate && date <= today;
 };
