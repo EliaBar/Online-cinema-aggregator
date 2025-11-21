@@ -9,7 +9,7 @@ exports.getUserStarRating = async (userId, filmId) => {
             "SELECT rating FROM ratings WHERE user_id = ? AND film_id = ?",
             [userId, filmId]
         );
-        return rows[0] ? rows[0].rating_value : null; 
+        return rows[0] ? rows[0].rating : null; 
     } catch (err) {
         console.error("Помилка getUserStarRating:", err);
         throw err;
@@ -49,6 +49,19 @@ exports.saveStarRating = async (userId, filmId, ratingValue) => {
     }
 };
 
+exports.deleteStarRating = async (userId, filmId) => {
+    try {
+        await pool.execute(
+            "DELETE FROM ratings WHERE user_id = ? AND film_id = ?",
+            [userId, filmId]
+        );
+        return true;
+    } catch (err) {
+        console.error("Помилка deleteStarRating:", err);
+        throw err;
+    }
+};
+
 /**
  * Зберігає емоції (повністю перезаписує старий вибір користувача).
  */
@@ -57,7 +70,6 @@ exports.saveMoodRatings = async (userId, filmId, moodTagIds) => {
     try {
         await connection.beginTransaction();
         
-        // 1. Видаляємо старі емоції для цього фільму/користувача
         await connection.execute(
             "DELETE FROM film_mood_ratings WHERE user_id = ? AND film_id = ?",
             [userId, filmId]
@@ -81,5 +93,21 @@ exports.saveMoodRatings = async (userId, filmId, moodTagIds) => {
         throw err;
     } finally {
         connection.release(); 
+    }
+};
+
+/**
+ * перевіряє, чи має користувач хоча б одну оцінку.
+ */
+exports.checkUserHasRatings = async (userId) => {
+    try {
+        const [rows] = await pool.execute(
+            "SELECT 1 FROM ratings WHERE user_id = ? LIMIT 1",
+            [userId]
+        );
+        return rows.length > 0;
+    } catch (err) {
+        console.error("Помилка checkUserHasRatings:", err);
+        throw err;
     }
 };

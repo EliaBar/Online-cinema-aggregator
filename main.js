@@ -24,6 +24,7 @@ app.use(session({
 app.use((req, res, next) => {
     if (req.session && req.session.user) {
         res.locals.isAuthenticated = true;
+        res.locals.user = req.session.user;
     } else {
         res.locals.isAuthenticated = false;
     }

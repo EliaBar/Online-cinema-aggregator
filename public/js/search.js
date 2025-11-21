@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
-   // === БЛОК 1: Логіка перемикання Пошук/Фільтри ===
+   // ===  Логіка перемикання Пошук/Фільтри ===
     const searchComponent = document.getElementById("search-component");
     const toggleToFilterBtn = document.getElementById("toggle-to-filter");
     const toggleToTextBtn = document.getElementById("toggle-to-text");
@@ -14,5 +14,35 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     } else {
         console.error("Помилка: не вдалося знайти елементи для перемикання пошуку/фільтрів.");
+    }
+
+    const yearStartSelect = document.getElementById('year_start');
+    const yearEndSelect = document.getElementById('year_end');
+
+    if (yearStartSelect && yearEndSelect) {
+
+        const updateYearEndOptions = () => {
+            const startYear = parseInt(yearStartSelect.value, 10);
+            
+            Array.from(yearEndSelect.options).forEach(option => {
+                const endYear = parseInt(option.value, 10);
+                
+                if (endYear < startYear) {
+                    option.disabled = true;
+                    option.style.display = 'none';
+                } else {
+                    option.disabled = false;
+                    option.style.display = 'block';
+                }
+            });
+
+            if (parseInt(yearEndSelect.value, 10) < startYear) {
+                yearEndSelect.value = yearStartSelect.value; 
+            }
+        };
+
+        yearStartSelect.addEventListener('change', updateYearEndOptions);
+        
+        updateYearEndOptions();
     }
 });

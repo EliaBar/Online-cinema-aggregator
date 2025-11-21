@@ -1,3 +1,31 @@
+ /**
+ * Створює спливаюче "toast" сповіщення.
+ * @param {string} message - Текст повідомлення
+ * @param {string} type - 'success' (зелений) або 'error' (червоний)
+ * @param {number} duration - Час у мс 
+ */
+function showToast(message, type = 'info', duration = 3500) {
+    const container = document.getElementById('toast-container');
+    if (!container) return; 
+
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.animation = 'fadeOut 0.4s ease forwards';
+        
+        setTimeout(() => {
+            if (toast.parentNode === container) {
+                container.removeChild(toast);
+            }
+        }, 400); 
+        
+    }, duration);
+}
+ 
  document.addEventListener("DOMContentLoaded", function() {
     // ===  Логіка перемикання Теми ===
     const themeToggleBtn = document.getElementById("theme-toggle");
@@ -59,7 +87,7 @@
         console.error("Помилка: не вдалося знайти елементи бічного меню.");
     }
 
-    // === БЛОК 5: ЛОГІКА МОДАЛЬНИХ ВІКОН ВХОДУ ===
+    // === ЛОГІКА МОДАЛЬНИХ ВІКОН ВХОДУ ===
     const authModalOverlay = document.getElementById("auth-modal-overlay");
     const loginModal = document.getElementById("login-modal");
     const registerModal = document.getElementById("register-modal");
@@ -70,12 +98,12 @@
     const goToLoginBtn = document.getElementById("go-to-login");
     const closeModalBtns = document.querySelectorAll(".close-modal-btn");
 
-    // --- 1. Редірект після входу в акаунт---
+    // ---  Редірект після входу в акаунт---
     // Ця змінна буде зберігати, куди перекинути користувача після входу
     let postLoginRedirectUrl = '/'; // За замовчуванням - на головну
 
     const openModal = (redirectUrl) => {
-        // 2. Записується, звідки прийшов користувач
+        // Записується, звідки прийшов користувач
         postLoginRedirectUrl = redirectUrl; 
         
         if (authModalOverlay) {
@@ -91,7 +119,6 @@
         }
     };
 
-    // --- Прив'язка подій ---
     if (userIconBtn) {
         userIconBtn.addEventListener("click", () => openModal('/'));
     }
@@ -128,15 +155,13 @@
         });
     }
 
-    // === БЛОК 6: ЛОГІКА ВІДПРАВКИ ФОРМИ ВХОДУ ===
-    const loginForm = document.getElementById('login-form');
-    const loginErrorDiv = document.getElementById('login-error');
+    // ===  ЛОГІКА ВІДПРАВКИ ФОРМ (AJAX/FETCH) ===
 
+    // --- Форма Входу ---
+    const loginForm = document.getElementById('login-form');
     if (loginForm) {
         loginForm.addEventListener('submit', async function(event) {
             event.preventDefault(); 
-            loginErrorDiv.textContent = ''; 
-            
             const formData = new FormData(loginForm);
             const data = Object.fromEntries(formData.entries());
 
@@ -146,69 +171,56 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
-
                 const result = await response.json();
 
                 if (response.ok) { 
-                    // --- 5. ЛОГІКА УСПІХУ ---
-                    loginErrorDiv.textContent = result.message + " Перенаправляємо...";
-                    loginErrorDiv.style.color = 'green';
+                    showToast(result.message, 'success'); 
                     setTimeout(() => {
-                        window.location.href = postLoginRedirectUrl;
+                        window.location.href = postLoginRedirectUrl; 
                     }, 1000); 
-                    
                 } else {
-                    loginErrorDiv.textContent = result.message;
+                    showToast(result.message, 'error');
                 }
             } catch (err) {
-                loginErrorDiv.textContent = 'Помилка мережі. Спробуйте пізніше.';
+                showToast('Помилка мережі. Спробуйте пізніше.', 'error'); 
             }
         });
     }
-
     const registerForm = document.getElementById('register-form');
-    const registerErrorDiv = document.getElementById('register-error');
 
     if (registerForm) {
         registerForm.addEventListener('submit', async function(event) {
-            // 1. заборона на переезаватаження чторінки
             event.preventDefault(); 
             
-            registerErrorDiv.textContent = ''; // Очищення старих помилок
-            registerErrorDiv.style.color = 'red'; 
-        
             const formData = new FormData(registerForm);
             const data = Object.fromEntries(formData.entries());
 
-            // --- 1. КЛІЄНТСЬКА ВАЛІДАЦІЯ ---
             const password = data.password;
             const dob = new Date(data.dob);
             const minDate = new Date('1920-01-01');
             const today = new Date();
-            today.setHours(23, 59, 59, 999); 
+            today.setHours(23, 59, 59, 999);
 
-            // Regex: мін 8, 1 велика, 1 цифра, 1 спец. символ
-            const passwordRegex = /^(?=.*\d)(?=.*[A-Z])(?=.*[@$!%*?#&])[A-Za-z\d@$!%*?#&]{8,}$/;
+            const passwordRegex = /^(?=.*\d)(?=.*[A-Z])(?=.*[@$!%*?#&_-])[A-Za-z\d@$!%*?#&_-]{8,}$/;
 
             if (password !== data.confirm_password) {
-                registerErrorDiv.textContent = 'Паролі не співпадають.';
+                showToast('Паролі не співпадають.', 'error');
                 return; 
             }
             if (!passwordRegex.test(password)) {
-                registerErrorDiv.textContent = 'Пароль (мін. 8 символів, 1 велика, 1 цифра, 1 спец. символ).';
-                return; 
+                showToast('Пароль (мін. 8 символів, 1 велика, 1 цифра, 1 спец. символ).', 'error');
+                return;
             }
             if (dob < minDate) {
-                registerErrorDiv.textContent = 'Дата народження не може бути раніше 1920 року.';
-                return; 
+                showToast('Дата народження не може бути раніше 1920 року.', 'error');
+                return;
             }
             if (dob > today) {
-                registerErrorDiv.textContent = 'Дата народження не може бути у майбутньому.';
-                return; 
+                showToast('Дата народження не може бути у майбутньому.', 'error');
+                return;
             }
-
+ 
             try {
-                // 2. Дані відправляються, якщо валідація пройшла
                 const response = await fetch('/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -218,21 +230,17 @@
                 const result = await response.json();
 
                 if (response.ok) {
-
-                    registerErrorDiv.textContent = result.message;
-                    registerErrorDiv.style.color = 'green'; 
+                    showToast(result.message, 'success');
                     registerForm.reset(); 
                 } else {
-                    registerErrorDiv.textContent = result.message;
-                    registerErrorDiv.style.color = 'red'; 
+                    showToast(result.message, 'error');
                 }
             } catch (err) {
-                registerErrorDiv.textContent = 'Помилка мережі. Спробуйте пізніше.';
+                showToast('Помилка мережі. Спробуйте пізніше.', 'error');
             }
         });
     }
-
-    // === БЛОК X: ЛОГІКА ДЛЯ ПЕРЕМИКАННЯ ВИДИМОСТІ ПАРОЛЯ ===
+    // ===  ЛОГІКА ДЛЯ ПЕРЕМИКАННЯ ВИДИМОСТІ ПАРОЛЯ ===
 
 
 const passwordToggleIcons = document.querySelectorAll('.password-toggle-icon');

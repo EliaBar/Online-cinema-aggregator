@@ -15,7 +15,6 @@ exports.createUser = async (email, hashedPassword, gender, dob) => {
 
 exports.findUserByEmail = async (email) => {
     try {
-        // Використовуємо ваші назви: email
         const [rows] = await pool.execute(
             "SELECT * FROM users WHERE email = ?",
             [email]
@@ -42,7 +41,7 @@ exports.findUserById = async (id) => {
 
 
 /**
- * Оновлює особисті дані (стать, дата народження) для користувача.
+ * Оновлює особисті дані для користувача.
  */
 exports.updateUserProfile = async (userId, gender, dob) => {
     try {
@@ -50,7 +49,7 @@ exports.updateUserProfile = async (userId, gender, dob) => {
             "UPDATE users SET gender = ?, date_of_birth = ? WHERE id = ?",
             [gender, dob, userId]
         );
-        return result.affectedRows > 0; // Поверне true, якщо оновлення відбулось
+        return result.affectedRows > 0;
     } catch (err) {
         console.error('Помилка в userRepository (updateUserProfile):', err);
         throw err;

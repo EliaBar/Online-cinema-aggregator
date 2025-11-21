@@ -1,33 +1,26 @@
-const bcrypt = require('bcryptjs');
 const userRepo = require('../repositories/user-repository');
+const logic = require('../services/logic'); 
+const security = require('../services/security'); 
 
-// Обробка POST /register
 exports.handleRegister = async (req, res) => {
     try {
         const { email, password, confirm_password, gender, dob } = req.body;
 
-        // --- Валідація ---
         if (!email || !password || !confirm_password || !gender || !dob) {
             return res.status(400).json({ message: "Будь ласка, заповніть всі поля" });
         }
-        if (password !== confirm_password) {
+
+        if (!logic.doPasswordsMatch(password, confirm_password)) {
             return res.status(400).json({ message: "Паролі не співпадають" });
         }
-        // --- 2.  СЕРВЕРНА ВАЛІДАЦІЯ ---
-        const passwordRegex = /^(?=.*\d)(?=.*[A-Z])(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-        const userDob = new Date(dob);
-        const minDate = new Date('1920-01-01');
-        const today = new Date();
-        today.setHours(23, 59, 59, 999);
-
-        if (!passwordRegex.test(password)) {
-            return res.status(400).json({ message: "Пароль не відповідає вимогам (мін. 8 символів, 1 велика, 1 цифра, 1 спец. символ)." });
+        if (!logic.isValidPassword(password)) {
+            return res.status(400).json({ message: "Пароль не відповідає вимогам (мін. 8 символів, 1 велика, 1 цифра, 1 спец. символ(@$!%*?&))." });
         }
-        if (userDob < minDate) {
-            return res.status(400).json({ message: "Дата народження не може бути раніше 01.01.1920." });
+        if (!logic.isValidDob(dob)) {
+            return res.status(400).json({ message: "Некоректна дата народження." });
         }
-        if (userDob > today) {
-            return res.status(400).json({ message: "Дата народження не може бути у майбутньому." });
+        if (!logic.isValidGender(gender)) {
+             return res.status(400).json({ message: "Обрана некоректна стать." });
         }
         
         const existingUser = await userRepo.findUserByEmail(email);
@@ -35,11 +28,10 @@ exports.handleRegister = async (req, res) => {
             return res.status(400).json({ message: "Користувач з таким email вже існує" });
         }
 
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
+        const hashedPassword = await security.hashPassword(password);
+        
         await userRepo.createUser(email, hashedPassword, gender, dob);
         
-        // Повернення JSON про успіх
         return res.status(201).json({ message: "Реєстрація успішна! Тепер ви можете увійти." });
 
     } catch (err) {
@@ -58,7 +50,8 @@ exports.handleLogin = async (req, res) => {
             return res.status(401).json({ message: "Користувача з таким email не знайдено" });
         }
 
-        const isMatch = await bcrypt.compare(password, user.password_hash);
+        const isMatch = await security.verifyPassword(password, user.password_hash);
+        
         if (!isMatch) {
             return res.status(401).json({ message: "Неправильний пароль" });
         }
@@ -88,36 +81,25 @@ exports.handleLogout = (req, res) => {
     req.session.destroy((err) => {
         if (err) {
             console.error("Помилка виходу:", err);
+            return res.status(500).json({ message: "Помилка під час виходу." });
         }
-        res.redirect('/'); 
+        res.status(200).json({ message: "Ви успішно вийшли з системи!" });
     });
 };
 
-/**
- * Обробка POST /profile/update
- * Оновлює особисті дані користувача.
- */
+// Обробка POST /profile/update
 exports.handleUpdateProfile = async (req, res) => {
     try {
-        // Береться ID користувача з сесії
         const userId = req.session.user.id;
-        // + нові дані з форми
         const { gender, dob } = req.body;
 
-        // Валідація 
-        const userDob = new Date(dob);
-        const minDate = new Date('1920-01-01');
-        const today = new Date();
-        today.setHours(23, 59, 59, 999);
-
-        if (userDob < minDate || userDob > today) {
+        if (!logic.isValidDob(dob)) {
             return res.status(400).json({ message: "Вказана некоректна дата народження." });
         }
-        if (!['m', 'f', 'a'].includes(gender)) {
+        if (!logic.isValidGender(gender)) {
             return res.status(400).json({ message: "Обрана некоректна стать." });
         }
 
-        // Оновлення даних в БД
         await userRepo.updateUserProfile(userId, gender, dob);
 
         return res.status(200).json({ message: "Дані успішно оновлено!" });
@@ -128,42 +110,37 @@ exports.handleUpdateProfile = async (req, res) => {
     }
 };
 
+// Обробка POST /profile/change-password
 exports.handleChangePassword = async (req, res) => {
     try {
         const userId = req.session.user.id;
         const { old_password, new_password, confirm_new_password } = req.body;
 
-        // 1. Валідація
         if (!old_password || !new_password || !confirm_new_password) {
             return res.status(400).json({ message: "Будь ласка, заповніть всі поля пароля." });
         }
-        if (new_password !== confirm_new_password) {
+        
+        // Використовуємо utils/logic
+        if (!logic.doPasswordsMatch(new_password, confirm_new_password)) {
             return res.status(400).json({ message: "Новий пароль та підтвердження не співпадають." });
         }
-        
-        // 2. Валідація складності нового пароля
-        const passwordRegex = /^(?=.*\d)(?=.*[A-Z])(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-        if (!passwordRegex.test(new_password)) {
-            return res.status(400).json({ message: "Новий пароль не відповідає вимогам безпеки (мін. 8 символів, 1 велика, 1 цифра, 1 спец. символ)." });
+        if (!logic.isValidPassword(new_password)) {
+            return res.status(400).json({ message: "Новий пароль не відповідає вимогам безпеки." });
         }
 
-        // 3. Перевірка старого пароля
         const user = await userRepo.findUserById(userId);
-        const isMatch = await bcrypt.compare(old_password, user.password_hash);
+        
+        const isMatch = await security.verifyPassword(old_password, user.password_hash);
         if (!isMatch) {
             return res.status(401).json({ message: "Старий пароль введено неправильно." });
         }
 
-        // --- 4.ПЕРЕВІРКА: Чи не співпадає новий пароль зі старим? ---
-        const isSameAsOld = await bcrypt.compare(new_password, user.password_hash);
+        const isSameAsOld = await security.verifyPassword(new_password, user.password_hash);
         if (isSameAsOld) {
             return res.status(400).json({ message: "Новий пароль не повинен співпадати зі старим." });
         }
-        // --- ----------------------------------------------------- ---
 
-        // 5. Хешування та збереження 
-        const salt = await bcrypt.genSalt(10);
-        const newHashedPassword = await bcrypt.hash(new_password, salt);
+        const newHashedPassword = await security.hashPassword(new_password);
         await userRepo.updateUserPassword(userId, newHashedPassword);
         
         return res.status(200).json({ message: "Пароль успішно оновлено!" });
@@ -174,33 +151,28 @@ exports.handleChangePassword = async (req, res) => {
     }
 };
 
-/**
- * Обробка POST /profile/delete-account
- * Видаляє акаунт користувача.
- */
+// Обробка POST /profile/delete-account
 exports.handleDeleteAccount = async (req, res) => {
     try {
         const userId = req.session.user.id;
-        const { password } = req.body; // Пароль для підтвердження
+        const { password } = req.body; 
 
         if (!password) {
             return res.status(400).json({ message: "Будь ласка, введіть пароль для підтвердження." });
         }
 
-        // 1. Перевірка пароля
         const user = await userRepo.findUserById(userId);
-        const isMatch = await bcrypt.compare(password, user.password_hash);
+        
+        const isMatch = await security.verifyPassword(password, user.password_hash);
         if (!isMatch) {
             return res.status(401).json({ message: "Пароль введено неправильно. Акаунт не видалено." });
         }
 
-        // 2. Видалення
         await userRepo.deleteUserById(userId);
 
-        // 3. Вихід (знищення сесії)
         req.session.destroy((err) => {
             if (err) {
-                console.error("Помилка під час знищення сесії при видаленні акаунта:", err);
+                console.error("Помилка під час знищення сесії:", err);
                 return res.status(500).json({ message: "Акаунт видалено, але сталася помилка виходу." });
             }
             return res.status(200).json({ message: "Акаунт успішно видалено.", redirectUrl: '/' });

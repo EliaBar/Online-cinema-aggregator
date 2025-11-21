@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Рекомендації - FilmForToday</title>
+    
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body class="recommendations-page-body"> 
+    
+    <%- include('partials/header') %>
+    <div class="menu-overlay" id="menu-overlay"></div>
+
+    <main>
+        <div class="container">
+            
+            <section class="mood-filter-bar">
+                <h4>Оберіть настрій:</h4>
+                <div class="mood-tags-list">
+                    
+                    <a href="/recommendations" 
+                       class="mood-tag-btn <%= (!currentMoodId) ? 'active' : '' %>">
+                       ✨ Усі
+                    </a>
+
+                    <% allMoodTags.forEach(tag => { %>
+                        <a href="/recommendations?mood_tag_id=<%= tag.mood_tag_id %>" 
+                           class="mood-tag-btn <%= (currentMoodId == tag.mood_tag_id) ? 'active' : '' %>">
+                            <%= tag.emoji %> <%= tag.name %>
+                        </a>
+                    <% }); %>
+                </div>
+            </section>
+            
+            <h2><%= pageTitle %></h2>
+
+            <% if (films.length > 0) { %>
+                <div class="film-grid">
+                    <% films.forEach(function(film) { %>
+                        <a href="/film/<%= film.id %>" class="film-card-link">
+                            <div class="film-card">
+                                <div class="film-poster">
+                                    <img src="<%= film.image %>" alt="<%= film.name %>">
+                                </div>
+                                <div class="film-title">
+                                    <%= film.name %>
+                                </div>
+                            </div>
+                        </a>
+                    <% }) %>
+                </div>
+            <% } else { %>
+                <h2>На жаль, нічого не знайдено</h2>
+                <p>Спробуйте інший настрій або оцініть більше фільмів, щоб покращити рекомендації.</p>
+            <% } %>
+
+        </div>
+    </main>
+    
+    <%- include('partials/auth-modals') %>
+    <div id="toast-container"></div>
+    <script src="/js/main.js"></script>
+    
+    </body>
+</html>

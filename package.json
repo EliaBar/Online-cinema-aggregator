@@ -4,8 +4,8 @@
   "description": "Aggregation of data about the films from the platforms Megogo and Sweet.tv",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node main.js"
+    "start": "node main.js",
+    "test": "jest --coverage"
   },
   "author": "Elina Baranevych",
   "license": "ISC",
@@ -16,5 +16,8 @@
     "express": "^5.1.0",
     "express-session": "^1.18.2",
     "mysql2": "^3.14.3"
+  },
+  "devDependencies": {
+    "jest": "^30.2.0"
   }
 }
