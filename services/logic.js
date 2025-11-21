@@ -13,7 +13,7 @@ exports.processCountries = (countryStrings) => {
             });
         }
     });
-    return Array.from(countrySet).sort();
+    return Array.from(countrySet).sort((a, b) => b - a);
 };
 
 /**
