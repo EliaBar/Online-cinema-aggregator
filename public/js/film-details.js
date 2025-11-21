@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const stars = starWidget.querySelectorAll('i');
         const filmId = starWidget.getAttribute('data-film-id');
         
-        let currentRating = parseInt(starWidget.getAttribute('data-current-rating'), 10) || 0;
+        let currentRating = Number.parseInt(starWidget.getAttribute('data-current-rating'), 10) || 0;
 
         const setStars = (rating) => {
             stars.forEach(star => {
@@ -25,9 +25,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
         stars.forEach(star => {
             star.addEventListener('mouseover', () => {
-                const rating = parseInt(star.getAttribute('data-value'), 10);
+                const rating = Number.parseInt(star.getAttribute('data-value'), 10);
                 stars.forEach((s, i) => {
-                    const sValue = parseInt(s.getAttribute('data-value'), 10);
+                    const sValue = Number.parseInt(s.getAttribute('data-value'), 10);
                     if (sValue <= rating) {
                         s.classList.add('fas', 'hover');
                         s.classList.remove('far');
@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", function() {
             });
 
             star.addEventListener('click', async () => {
-                const ratingValue = parseInt(star.getAttribute('data-value'), 10);
+                const ratingValue = Number.parseInt(star.getAttribute('data-value'), 10);
                 const newRating = (ratingValue === currentRating) ? 0 : ratingValue;
                 
                 showToast('Збереження...', 'info');
@@ -84,7 +84,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const sendMoodTags = async () => {
             const activeButtons = moodWidget.querySelectorAll('.mood-tag-btn.active');
             const moodTagIds = Array.from(activeButtons).map(btn => 
-                parseInt(btn.getAttribute('data-tag-id'), 10)
+                Number.parseInt(btn.getAttribute('data-tag-id'), 10)
             );
             
             messageDiv.textContent = 'Збереження...';
