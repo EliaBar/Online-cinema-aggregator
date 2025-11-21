@@ -323,7 +323,7 @@ exports.getFilmEditPage = async (req, res) => {
                 });
             }
         });
-        const allCountries = Array.from(countrySet).sort();
+        const allCountries = Array.from(countrySet).sort((a, b) => a.localeCompare(b));
 
         const allYears = [];
         for (let year = new Date().getFullYear() + 1; year >= 1888; year--) {
