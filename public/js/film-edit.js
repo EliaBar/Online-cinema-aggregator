@@ -6,10 +6,10 @@ document.addEventListener("DOMContentLoaded", function() {
 
     if (yearStartSelect && yearEndSelect) {
         const updateYearEndOptions = () => {
-            const startYear = parseInt(yearStartSelect.value, 10);
+            const startYear = Number.parseInt(yearStartSelect.value, 10);
             
             Array.from(yearEndSelect.options).forEach(option => {
-                const endYear = parseInt(option.value, 10);
+                const endYear = Number.parseInt(option.value, 10);
                 if (endYear < startYear) {
                     option.disabled = true;
                     option.style.display = 'none';
@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
             });
 
-            if (parseInt(yearEndSelect.value, 10) < startYear) {
+            if (Number.parseInt(yearEndSelect.value, 10) < startYear) {
                 yearEndSelect.value = yearStartSelect.value; 
             }
         };
