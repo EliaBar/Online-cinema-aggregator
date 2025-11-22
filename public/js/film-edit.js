@@ -64,8 +64,8 @@ document.addEventListener("DOMContentLoaded", function() {
             cb.addEventListener('change', function(e) {
                 const checkedCount = document.querySelectorAll('#genre-multiselect-edit input[name="genre"]:checked').length;
                 
-                if (checkedCount > 3) {
-                    showToast('Можна обрати не більше 3-х жанрів.', 'error');
+                if (checkedCount > 7) {
+                    showToast('Можна обрати не більше 7-х жанрів.', 'error');
                     this.checked = false; 
                 }
                 updateTriggerTextEdit();
