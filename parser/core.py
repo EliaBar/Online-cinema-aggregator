@@ -101,7 +101,7 @@ def parse_megogo_options(film_id, platform_id, json_str):
                 
                 if 'Передплата' in access_type:
                     access_type = 'Підписка'
-                    match = re.search(r'(\d+)\s*грн', description)
+                    match = re.search(r'(\d+)\s{0,20}грн', description)
                     if match:
                         price_from_desc = match.group(1)
                         if price_from_desc.isdigit():
