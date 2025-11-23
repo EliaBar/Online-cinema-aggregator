@@ -303,7 +303,7 @@ exports.getFilmEditPage = async (req, res) => {
 
         let durationValue = null;
         if (film.duration) {
-            durationValue = parseInt(film.duration, 10) || null;
+            durationValue = Number.parseInt(film.duration, 10) || null;
         }
 
         let yearStart = film.release_year || "";
@@ -323,7 +323,7 @@ exports.getFilmEditPage = async (req, res) => {
                 });
             }
         });
-        const allCountries = Array.from(countrySet).sort();
+        const allCountries = Array.from(countrySet).sort((a, b) => a.localeCompare(b));
 
         const allYears = [];
         for (let year = new Date().getFullYear() + 1; year >= 1888; year--) {

@@ -335,7 +335,7 @@ exports.updateFilmDetails = async (filmId, data) => {
         );
 
         if (data.genreIds && data.genreIds.length > 0) {
-            const genreValues = data.genreIds.map(genreId => [filmId, parseInt(genreId)]);
+            const genreValues = data.genreIds.map(genreId => [filmId, Number.parseInt(genreId)]);
             
             await connection.query(
                 "INSERT INTO film_genre (film_id, genre_id) VALUES ?",
