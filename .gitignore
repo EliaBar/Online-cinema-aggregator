@@ -1,3 +1,13 @@
 cert/
+config/
 node_modules/
 .env
+parser/cookies.json
+parser/db_config.json
+parser/__pycache__/
+parser/*.py[cod]
+parser/*$py.class
+coverage/
+htmlcov/
+.pytest_cache/
+.coverage

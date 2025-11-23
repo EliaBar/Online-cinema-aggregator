@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1763640834407" clover="3.2.0">
-  <project timestamp="1763640834408" name="All files">
-    <metrics statements="48" coveredstatements="48" conditionals="34" coveredconditionals="32" methods="13" coveredmethods="13" elements="95" coveredelements="93" complexity="0" loc="48" ncloc="48" packages="2" files="2" classes="2"/>
+<coverage generated="1763826759775" clover="3.2.0">
+  <project timestamp="1763826759776" name="All files">
+    <metrics statements="60" coveredstatements="60" conditionals="44" coveredconditionals="42" methods="14" coveredmethods="14" elements="118" coveredelements="116" complexity="0" loc="60" ncloc="60" packages="2" files="2" classes="2"/>
     <package name="middleware">
       <metrics statements="8" coveredstatements="8" conditionals="8" coveredconditionals="8" methods="2" coveredmethods="2"/>
       <file name="auth-middleware.js" path="C:\Users\HP\OneDrive\Dokumenter\КПІ\Курсова 5 семестр\Online cinema aggregator\middleware\auth-middleware.js">
@@ -16,10 +16,10 @@
         <line num="13" count="2" type="stmt"/>
       </file>
     </package>
-    <package name="utils">
-      <metrics statements="40" coveredstatements="40" conditionals="26" coveredconditionals="24" methods="11" coveredmethods="11"/>
-      <file name="logic.js" path="C:\Users\HP\OneDrive\Dokumenter\КПІ\Курсова 5 семестр\Online cinema aggregator\utils\logic.js">
-        <metrics statements="40" coveredstatements="40" conditionals="26" coveredconditionals="24" methods="11" coveredmethods="11"/>
+    <package name="services">
+      <metrics statements="52" coveredstatements="52" conditionals="36" coveredconditionals="34" methods="12" coveredmethods="12"/>
+      <file name="logic.js" path="C:\Users\HP\OneDrive\Dokumenter\КПІ\Курсова 5 семестр\Online cinema aggregator\services\logic.js">
+        <metrics statements="52" coveredstatements="52" conditionals="36" coveredconditionals="34" methods="12" coveredmethods="12"/>
         <line num="4" count="1" type="stmt"/>
         <line num="5" count="3" type="cond" truecount="2" falsecount="0"/>
         <line num="6" count="2" type="stmt"/>
@@ -43,23 +43,35 @@
         <line num="41" count="1" type="stmt"/>
         <line num="51" count="1" type="stmt"/>
         <line num="52" count="7" type="stmt"/>
-        <line num="54" count="7" type="cond" truecount="2" falsecount="0"/>
-        <line num="61" count="1" type="stmt"/>
-        <line num="62" count="7" type="cond" truecount="2" falsecount="0"/>
+        <line num="53" count="7" type="cond" truecount="2" falsecount="0"/>
+        <line num="60" count="1" type="stmt"/>
+        <line num="61" count="7" type="cond" truecount="2" falsecount="0"/>
+        <line num="63" count="6" type="stmt"/>
         <line num="64" count="6" type="stmt"/>
-        <line num="65" count="6" type="stmt"/>
-        <line num="72" count="1" type="stmt"/>
-        <line num="73" count="6" type="cond" truecount="2" falsecount="0"/>
+        <line num="71" count="1" type="stmt"/>
+        <line num="72" count="6" type="cond" truecount="2" falsecount="0"/>
+        <line num="73" count="5" type="stmt"/>
         <line num="74" count="5" type="stmt"/>
         <line num="75" count="5" type="stmt"/>
         <line num="76" count="5" type="stmt"/>
-        <line num="77" count="5" type="stmt"/>
-        <line num="80" count="5" type="cond" truecount="2" falsecount="0"/>
-        <line num="82" count="4" type="cond" truecount="2" falsecount="0"/>
-        <line num="88" count="1" type="stmt"/>
-        <line num="89" count="6" type="stmt"/>
-        <line num="95" count="1" type="stmt"/>
-        <line num="96" count="2" type="stmt"/>
+        <line num="79" count="5" type="cond" truecount="2" falsecount="0"/>
+        <line num="81" count="4" type="cond" truecount="2" falsecount="0"/>
+        <line num="87" count="1" type="stmt"/>
+        <line num="88" count="6" type="stmt"/>
+        <line num="94" count="1" type="stmt"/>
+        <line num="95" count="2" type="stmt"/>
+        <line num="102" count="1" type="stmt"/>
+        <line num="103" count="14" type="cond" truecount="4" falsecount="0"/>
+        <line num="105" count="12" type="stmt"/>
+        <line num="108" count="12" type="cond" truecount="2" falsecount="0"/>
+        <line num="109" count="3" type="stmt"/>
+        <line num="114" count="9" type="stmt"/>
+        <line num="115" count="9" type="cond" truecount="2" falsecount="0"/>
+        <line num="116" count="2" type="stmt"/>
+        <line num="120" count="7" type="stmt"/>
+        <line num="121" count="7" type="cond" truecount="2" falsecount="0"/>
+        <line num="122" count="2" type="stmt"/>
+        <line num="125" count="5" type="stmt"/>
       </file>
     </package>
   </project>
