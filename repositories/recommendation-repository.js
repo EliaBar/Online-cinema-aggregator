@@ -6,17 +6,6 @@ const pool = require('../config/db');
  */
 exports.getItemBaseRecommendations = async (userId) => {
     try {
-        /*
-         * ЛОГІКА ITEM-BASE:
-         * 1. (TargetUserHighRatings): Знаходимо фільми, які користувач високо оцінив (>= 4).
-         * 2. (UsersWhoLikedSameFilms): Знаходимо інших користувачів, 
-         * яким також сподобалися ці фільми.
-         * 3. (RecommendedItems): Збираємо всі інші фільми, які сподобалися 
-         * цій "схожій" групі користувачів.
-         * 4. (Фінальний SELECT): Рахуємо, які з цих  фільмів 
-         * зустрічалися найчастіше, і рекомендуємо їх.
-         */
-        
         const [rows] = await pool.execute(
             `
             WITH TargetUserHighRatings AS (
